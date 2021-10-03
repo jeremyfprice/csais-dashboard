@@ -854,483 +854,6 @@ Please cite this work with the following:
 
 This work is supported by a [Research Start-Up Funds Grant (RSFG)](https://research.iu.edu/funding-proposals/funding/opportunities/research-support-funds-grant/index.html) from the [IUPUI Office of the Vice Chancellor for Research](https://research.iu.edu/),a [Block Grant from the IU School of Education-Indianapolis at IUPUI](https://education.iupui.edu/), and an [IUPUI Institute for Integrative AI](https://iai.iupui.edu/) [Collaborative Seed Fund Grant](https://iai.iupui.edu/research/white-paper/).
 
-Factors
-======================================================================
-
-Row
-----------------------------------------------------------------------
-
-### Factors Title
-
-```{r}
-valueBox("Factors", icon = "fab fa-uncharted", color = colors.iu[6],
-         caption = "The factors that shape the community types")
-```
-
-Row
-----------------------------------------------------------------------
-
-### Description of Factors
-
-In identifying the ten community types, the following scales were used:
-
-  * **Community Landscape Scale**: An indication of what the community "looks like," based
-    on a combination of the US Department of Agriculture-designated Rural Urban Continuum Code (RUCC) and
-    the US Housing and Urban Development algorithm-derived Urbanization Perceptions Small Area Index (UPSAI). The 
-    Community Landscape Scale is calculated at the *municipal level*. The 
-    Community Landscape Scale is a number between 0 and 1, with *more urban* places 
-    closer to 0 and *more rural* places closer to 1.
-  * **Diversity Level Scale**: An indication of the diversity of the community, based on
-    an ecological diversity measure making use of racial and ethnic data from the 
-    US Census Bureau. The Diversity Level Scale is calculated at the *municipal level*.
-    The Diversity Level Scale is a number between 0 and 1, with *more diverse* places 
-    closer to 1 and *less diverse* places closer to 0.
-  * **Median Income Scale**: An indication of the wealth of the community, making use of 
-    median income data from the US Census Bureau. The Median Income Scale is calculated 
-    at the *municipal level*. The Median Income Scale is a number between 0 and 1, 
-    with *wealthier* places closer to 1 and *poorer* places closer to 0.
-  * **Jewish Infrastructure Scale**: An indication of the Jewish community structures in 
-    place in the community, based on a combination of the presence or absence of a 
-    Jewish Federation, status as a Network Community, location of a Jewish Community 
-    Relations Council (JCRC), and the percentage of the population of the county that 
-    is estimated to be Jewish. The Jewish Infrastructure Scale is calculated at the 
-    *county level*. The Jewish Infrastructure Scale is a number between -1 and 1, 
-    with *more established* Jewish infrastructure closer to 1 and *less established* 
-    Jewish infrastructure closer to -1.
-  * **Political Scale**: An indication of the political preferences of the community, 
-    based on a calculation of partisan lean over time and a calculation of presidential 
-    election volatility over time. The Political Scale is calculated at the *county level*.
-    The Political Scale is a number between -1 and 1, with *more Republican* `r fa("fas fa-republican")` areas closer 
-    to 1 and *more Democratic* `r fa("fas fa-democrat")` areas closer to -1.
-  * **Population Level Scale**: An indication of the population of the community, 
-    based on US Census data. Population is divided into 10 categories. The Population 
-    Level Scale is calculated at the *municipal level*. The Population Level Scale is a 
-    number between 0 and 1, with *more populous* places closer to 1 and *less populous* 
-    places closer to 0.
-  * **Sundown Scale**: An indication of the historical legacy of exclusion and oppression, 
-    based on the combination of identification as a historical sundown town, presence 
-    of a sign indicating sundown town status, presence of municipal ordinances codifying 
-    the community as a sundown town, confirmation as a sundown town, and present status 
-    as a sundown town. The Sundown Scale is calculated at the *municipal level*. The 
-    Sundown Scale is a number between 0 and 1, with *stronger sundown town legacies* 
-    closer to 1 and *weaker sundown town legacies* closer to 0.
-
-### Combination of Factors
-
-```{r}
-factors.frame <- data.frame(Initial = c("Sundown Status", "Sundown Sign", "Sundown Ordinance", "Sundown Confirmed", "Sundown Still",
-                             "RUCC", "UPSAI",
-                             "Diversity Index",
-                             "Median Income",
-                             "Jewish Federation", "Jewish Network", "Independent JCRC", "Federation-Based JCRC", "Percent Jewish (County)",
-                             "Partisan Lean", "Political Volatility",
-                             "Population"),
-                            Final = c("Sundown Scale", "Sundown Scale", "Sundown Scale", "Sundown Scale", "Sundown Scale",
-                                              "Community Landscape", "Community Landscape",
-                                              "Diversity Level",
-                                              "Median Income",
-                                              "Jewish Infrastructure", "Jewish Infrastructure", "Jewish Infrastructure", "Jewish Infrastructure", "Jewish Infrastructure",
-                                              "Political Scale", "Political Scale",
-                                              "Population Level"), value = 1)
-factors.alluvial <- ggplot(factors.frame, aes(y = value, axis1 = Initial, axis2 = Final)) +
-  geom_alluvium(aes(fill = Final)) +
-  geom_stratum(width = 6/12, fill = "#F7F7F8", color = "grey") +
-  geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
-  scale_fill_manual(values = community.icons$colors) +
-  theme(legend.position = "none",
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        axis.text = element_blank(),
-        title = element_blank(),
-        axis.title = element_blank(),
-        axis.ticks = element_blank(),
-        panel.background = element_blank(),
-        text = element_text(family = "Open Sans"))
-factors.alluvial
-```
-
-Row
-----------------------------------------------------------------------
-
-### Contributing Factors to Community Types
-  
-```{r}
-  graph.frame <- overall.frame %>% #filter(community_type == input$community_type) %>%
-    select(community_type, income_median, diversity_median, population_median, political_median,
-           jewish_median, community_median)
-  graph.frame$diversity_median <- graph.frame$diversity_median - median.diversity
-  graph.frame$jewish_median <- graph.frame$jewish_median - jewish.median
-  graph.frame$population_median <- graph.frame$population_median - population.median
-  graph.frame$income_median <- graph.frame$income_median - income.median
-  graph.frame$political_median <- graph.frame$political_median - political.median
-  graph.frame$community_median <- graph.frame$community_median - community.median
-  graph.frame <- graph.frame %>% pivot_longer(cols = !community_type, names_to = "measure") %>%
-    distinct()
-  graph.frame$value_group <- factor(case_when(graph.frame$value < -0.1 ~ "low",
-                                              graph.frame$value > 0.1 ~ "high",
-                                              TRUE ~ "middle"),
-                                    levels = c("low", "middle", "high"))
-  variable.key <- c("community_median" = "Community Type",
-                    "diversity_median" = "Diversity Level",
-                    "income_median" = "Income Level",
-                    "jewish_median" = "Jewish Infrastructure",
-                    "political_median" = "Political Scale",
-                    "population_median" = "Population")
-  graph.frame$measure <- recode(graph.frame$measure, !!!variable.key)
-  the.plot <- ggbarplot(graph.frame, x = "measure", y = "value",
-                        color = "#b5c8b8", fill = "measure",
-                        palette = colors.iu, #c("#006298", "#ffffff", "#990000"),
-                        order = c("Population", "Political Scale",
-                                  "Jewish Infrastructure", "Income Level",
-                                  "Diversity Level", "Community Type")) +
-    #title = plot.title,
-    #subtitle = sub.title,
-    #caption = cap.title) + 
-    scale_y_continuous(limits = c(-0.85, 0.85)) +
-    geom_hline(yintercept = 0, linetype = 2, color = "#79a7ac") +
-    theme(#axis.text.x = element_blank(),
-      axis.text.y = element_text(color = "#243142", family = "Open Sans", size = 8),
-      axis.title = element_blank(),
-      axis.ticks = element_blank(),
-      axis.line = element_line(color = "#b5c8b8"),
-      legend.position = "none",
-      panel.grid.major = element_line(color = "#edeac2", linetype = 8)) +
-    rotate()
-  the.plot <- facet(the.plot, facet.by = "community_type", ncol = 5)
-  the.plot <- ggplotly(the.plot)
-  the.plot
-```
-
-Row
-----------------------------------------------------------------------
-
-### Table of Community Types
-
-```{r}
-table.frame <- overall.frame %>%
-  select(community_type, community_median, diversity_median, income_median,
-         jewish_median, political_median, population_median) %>%
-  distinct() %>% arrange(community_type)
-reactable(table.frame,
-          columns = list(community_type = colDef(name = "Community Type", sortable = TRUE, filterable = FALSE),
-                         community_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Community Landscape"),
-          diversity_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Diversity Level"),
-          income_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Median Income"),
-          jewish_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Jewish Infrastructure"),
-          political_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Political Scale"),
-          population_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Population Level")),
-          searchable = TRUE, minRows = 10, defaultSorted = "community_type")
-```
-
-Row
-----------------------------------------------------------------------
-
-### Factors By Community
-
-```{r}
-  communities.frame <- overall.frame %>%
-    select(cityID, median_income, diversity_index, pop_category, political_scale,
-           jewish_infrastructure, community_interaction)
-  graph.frame <- communities.frame %>% pivot_longer(cols = !cityID, names_to = "measure")
-  ct.frame <- overall.frame %>% select(community_type, cityID)
-  graph.frame <- graph.frame %>% full_join(ct.frame) %>%
-    separate(cityID, into = c("abbreviation","city"), sep = "-", remove = FALSE) %>%
-    select(-cityID)
-  graph.frame$city <- toTitleCase(graph.frame$city)
-  graph.frame$abbreviation <- toupper(graph.frame$abbreviation)
-  graph.frame$city_name <- paste(graph.frame$city, graph.frame$abbreviation, sep = ", ")
-  graph.frame <- graph.frame %>% select(-city, -abbreviation)
-  variable.key <- c("community_interaction" = "Community Type",
-                    "diversity_index" = "Diversity Level",
-                    "median_income" = "Income Level",
-                    "jewish_infrastructure" = "Jewish Infrastructure",
-                    "political_scale" = "Political Scale",
-                    "pop_category" = "Population")
-  graph.frame$measure <- recode(graph.frame$measure, !!!variable.key)
-  the.plot <- ggviolin(graph.frame, x = "measure", y = "value",
-                       color = "measure",
-                       fill = "measure",
-                       palette = colors.iu.light,
-                       order = c("Population", "Political Scale",
-                                 "Jewish Infrastructure", "Income Level",
-                                 "Diversity Level", "Community Type")) +
-    #title = plot.title,
-    #subtitle = sub.title,
-    #caption = cap.title) + 
-    scale_y_continuous(limits = c(-1.5, 1.5)) +
-    # geom_hline(yintercept = 0, linetype = 2, color = "#79a7ac") +
-    theme(axis.text.x = element_text(color = "#243142", family = "Open Sans", size = 9, angle = 45),
-          axis.text.y = element_text(color = "#243142", family = "Open Sans"),
-          axis.title = element_blank(),
-          axis.ticks = element_blank(),
-          axis.line = element_line(color = "#b5c8b8"),
-          legend.position = "none",
-          panel.grid.major = element_line(color = "#edeac2", linetype = 8))# +
-  #rotate()
-  the.plot <- the.plot +
-    geom_quasirandom(aes(color = measure, text = city_name)) +
-    scale_color_manual(values = colors.iu[1:6])
-  the.plot <- facet(the.plot, facet.by = "community_type", ncol = 5)
-  ggplotly(the.plot, tooltip = c("text", "value"))
-#})
-#type.box
-```
-
-Geography
-======================================================================
-
-Row
-----------------------------------------------------------------------
-
-### Geography Title
-
-```{r}
-valueBox("Geography", icon = "fas fa-map-marked-alt", color = colors.iu[7],
-         caption = "Geographic distribution of community types")
-```
-
-Row
-----------------------------------------------------------------------
-
-### Geographic Distribution of Communities
-  
-```{r}
-  overall.map
-```
-
-### State-by-State Distributions of Communities Overall
-  
-```{r}
-  map.frame <- overall.frame %>% #filter(community_type == input$community_type) %>%
-    select(cityID, color, lat, lon) %>%
-    separate(cityID, into = c("abbreviation","city"), sep = "-", remove = FALSE)
-  map.frame$city <- toTitleCase(map.frame$city)
-  map.frame$abbreviation <- toupper(map.frame$abbreviation)
-  count.frame <- map.frame %>% count(abbreviation)
-  the.map <- usa.map %>% full_join(count.frame) 
-  hex.map <- ggplot(the.map) +
-    geom_sf(aes(geometry = tile_map, fill = n), color = "#A7A9AB") +
-    geom_sf_text(aes(geometry = tile_map, label = abbreviation),
-                 fun.geometry = function(x) st_centroid(x), family = "Open Sans") +
-    scale_fill_gradient(low = "#EDEBEB", high = "#990000", name = "Number", na.value = "#F7F7F8", breaks = c(0, 5, 10, 25, 50, 75)) +
-    theme_void() +
-    theme(legend.position = "right",
-          text = element_text(family = "Open Sans"))
-  hex.map
-```
-
-Row
-----------------------------------------------------------------------
-
-### Table of Communities
-
-```{r}
-table.frame <- overall.frame %>% separate(cityID, sep = "-", into = c("State", "City"))
-table.frame$State <- toupper(table.frame$State)
-table.frame$City <- toTitleCase(table.frame$City)
-table.frame <- table.frame %>%
-  select(community_type, City, State, community_interaction, diversity_index, median_income,
-       jewish_infrastructure, political_scale, pop_category) %>%
-  arrange(City)
-reactable(table.frame,
-          columns = list(community_type = colDef(name = "Community Type", sortable = TRUE, filterable = FALSE),
-                         City = colDef(sortable = TRUE, filterable = FALSE),
-                         State = colDef(sortable = TRUE, filterable = FALSE, width = 75),
-                         community_interaction = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Community Landscape"),
-          diversity_index = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Diversity Level"),
-          median_income = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Median Income"),
-          jewish_infrastructure = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Jewish Infrastructure"),
-          political_scale = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Political Scale"),
-          pop_category = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Population Level")),
-          searchable = TRUE, minRows = 8)
-```
-
-Row
-----------------------------------------------------------------------
-  
-### Regional Distribution
-  
-```{r}
-
-  plot.frame <- overall.frame %>%
-    select(cityID, community_type, region_scale) %>% separate(region_scale,
-                                              into = c("region", "division"))
-  region.key <- c("1" = "Northeast", "3" = "South",
-                  "2" = "Midwest", "4" = "West")
-  division.key <- c("1" = "New England", "2" = "Middle Atlantic",
-                    "5" = "South Atlantic", "6" = "East South Central",
-                    "7" = "West South Central", "3" = "East North Central",
-                    "4" = "West North Central", "8" = "Mountain",
-                    "9" = "Pacific")
-  plot.frame$region <- recode(plot.frame$region, !!!region.key)
-  plot.frame$division <- recode(plot.frame$division, !!!division.key)
-  region.count <- plot.frame %>% group_by(community_type, region, division) %>% tally() %>% drop_na()
-  region.levels <- c("West", "Midwest", "South", "Northeast")
-  division.levels <- c("Pacific", "Mountain", "West North Central",
-                       "East North Central", "West South Central",
-                       "East South Central", "South Atlantic",
-                       "Middle Atlantic", "New England")
-  region.empty <- data.frame(community_type = rep(c("Big Cities", "Centers of Socioeconomic Inequality",
-                                                    "Diverse Small Cities", "Diverse Suburban Jewish Centers",
-                                                    "Mid-Sized City Republicans", "Small Town Democrats",
-                                                    "Suburban Jewish Centers", "Wealthy Enclaves",
-                                                    "White Republicans", "White Suburbs"), 9),
-                             region = c("West", "West", "Midwest", "Midwest",
-                                        "South", "South", "South",
-                                        "Northeast", "Northeast"),
-                             division = division.levels)#,
-                            # n = NA)
-  region.count <- region.count %>% mutate(region = factor(region, levels = region.levels)) %>%
-    mutate(division = factor(division, levels = division.levels)) %>%
-    right_join(region.empty)
-  rd.plot <- ggplot(region.count, aes(region, division)) +
-    geom_tile(aes(fill = n), color = "#243142") +
-    geom_text(aes(label = n), size = 3)  +
-    scale_fill_steps(low = "#EDEBEB", high = "#990000", name = "Number", na.value = "#F7F7F8") +
-    xlab("Region") + ylab("Division") +
-    theme(panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          title = element_blank(),
-          text = element_text(family = "Open Sans"))
-  rd.plot <- facet(rd.plot, facet.by = "community_type", ncol = 5)
-  #rd.plot
-  ggplotly(rd.plot)
-```
-
-Incidents
-======================================================================
-
-Row
-----------------------------------------------------------------------
-
-### Incidents Title
-
-```{r}
-valueBox("Incidents", icon = "far fa-chart-bar", color = colors.iu[8],
-         caption = "Details of the incidents")
-```
-
-Row
-----------------------------------------------------------------------
-  
-### When Do They Take Place?
-  
-```{r}
-streamgraph(months.frame, key = "community_type", value="n", date="date", interpolate = "step") %>%
-  sg_fill_manual(colors.iu) %>%
-  sg_legend(show=TRUE, label="Community Type: ")# %>%
-```
-
-### Cumulative Incident Count
-
-```{r}
-cumulative.frame <- months.frame %>%
-  separate(col = "date", into = c("day", "month", "year"), remove = FALSE)
-complete.frame <- expand(cumulative.frame, community_type, day, month = 1:12, year = 2016:2019) %>%
-  mutate(date = glue("{day}-{month}-{year}")) %>% select(-day, -month, -year)
-cumulative.frame <- cumulative.frame %>% select(-day, -month, -year)
-complete.frame$date <- as.Date(complete.frame$date, format = "%d-%m-%Y")
-cumulative.frame$date <- as.Date(cumulative.frame$date, format = "%d-%m-%Y")
-cumulative.frame <- cumulative.frame %>%
-  full_join(complete.frame, by = c("community_type", "date")) %>%
-  group_by(community_type, date) %>%
-  arrange(community_type, date) %>%
-  replace_na(list(n = 0)) %>%
-  group_by(community_type) %>%
-  mutate(cumulative_sum = cumsum(n)) %>% ungroup()
-cumulative.plot <- ggplot(cumulative.frame, aes(x = as.Date(date, format = "%d-%m-%Y"),
-                                                y = cumulative_sum, fill = community_type)) +
-  geom_area() +
-  scale_fill_manual(values = community.icons$colors) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        title = element_blank(),
-        axis.title = element_blank(),
-        text = element_text(family = "Open Sans"),
-        panel.background = element_rect(fill = "white"))
-ggplotly(cumulative.plot)
-```
-
-Row
-----------------------------------------------------------------------
-
-### Table of Incidents
-
-```{r}
-table.frame <- coded.frame %>%
-  select(adl_id, date, community_type, city, state, Type, Nature,
-         Perpetrator, Target, Location) %>%
-  arrange(date, adl_id, Type, Nature)
-adl.frame <- read_csv("extremism.csv", col_names = TRUE) %>% select(adl_id, description)
-table.frame <- table.frame %>% left_join(adl.frame, by = "adl_id") %>%
-  select(adl_id, date, community_type, city, state, description, Type, Nature, Perpetrator, Target, Location)
-reactable(table.frame,
-          columns = list(adl_id = colDef(name = "ADL ID", sortable = TRUE, filterable = FALSE, width = 100),
-            date = colDef(name = "Date", sortable = TRUE, filterable = FALSE, width = 100, align = "right", format = colFormat(date = TRUE)),
-            community_type = colDef(name = "Community Type", sortable = TRUE, filterable = FALSE),
-            city = colDef(name = "City", sortable = TRUE, filterable = FALSE),
-            state = colDef(name = "State", sortable = TRUE, filterable = FALSE, width = 75),
-            description = colDef(name = "Description", sortable = FALSE, filterable = FALSE, minWidth = 300),
-            Type = colDef(sortable = TRUE, filterable = FALSE),
-            Nature = colDef(sortable = TRUE, filterable = FALSE),
-            Perpetrator = colDef(sortable = TRUE, filterable = FALSE),
-            Target = colDef(sortable = TRUE, filterable = FALSE),
-            Location = colDef(sortable = TRUE, filterable = FALSE)),
-          searchable = TRUE, minRows = 10, defaultSorted = "adl_id")
-```
-
-Row
-----------------------------------------------------------------------
-  
-### What They're About
-  
-```{r}
-  plot.frame <- coded.frame %>% select(community_type, Type, Nature)
-  incidents.count <- plot.frame %>% group_by(community_type, Type, Nature) %>% add_tally() %>% drop_na() %>% distinct()
-  type.levels <- c("Vandalism", "Harassment", "Cyberbullying", "Performance", "Literature Dump", "Bomb Threat", "Not Specified")
-  nature.levels <- c("Nazi", "General Antisemitism", "Oppression Connection", "Money", "Holocaust Denial", "Conspiracy", "Israel", "Not Specified")
-  incidents.count <- incidents.count %>% mutate(Type = factor(Type, levels = type.levels)) %>%
-    mutate(Nature = factor(Nature, levels = nature.levels))
-  
-  incidents.plot <- ggplot(incidents.count, aes(Type, Nature)) +
-    geom_tile(aes(fill = n), color = "#243142") +
-    geom_text(aes(label = n), size = 3)  +
-    scale_fill_steps(low = "#EDEBEB", high = "#990000", name = "Number", na.value = "#F7F7F8") +
-    theme(panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          title = element_blank(),
-          axis.text.x = element_text(angle = 45),
-          text = element_text(family = "Open Sans"))# +
-  incidents.plot <- facet(incidents.plot, facet.by = "community_type", ncol = 5)
-  ggplotly(incidents.plot)
-```
-
-Row
-----------------------------------------------------------------------
-
-### Who Is Involved?
-
-```{r}
-
-  plot.frame <- coded.frame %>% select(community_type, Perpetrator, Target)
-  incidents.count <- plot.frame %>% group_by(community_type, Perpetrator, Target) %>% add_tally() %>% drop_na() %>% distinct()
-  target.levels <- c("Not Specified", "Student", "School", "Teacher", "Outsider", "Parent", "School Personnel")
-  perpetrator.levels <- c("Not Specified", "Student", "Outsider", "Teacher", "Parent", "Crowd", "School Personnel")
-  incidents.count <- incidents.count %>% mutate(Target = factor(Target, levels = target.levels)) %>%
-    mutate(Perpetrator = factor(Perpetrator, levels = perpetrator.levels))
-  incidents.plot <- ggplot(incidents.count, aes(Perpetrator, Target)) +
-    geom_tile(aes(fill = n), color = "#243142") +
-    geom_text(aes(label = n), size = 3)  +
-    scale_fill_steps(low = "#EDEBEB", high = "#990000", name = "Number", na.value = "#F7F7F8") +
-    theme(panel.grid.major = element_blank(),
-          panel.grid.minor = element_blank(),
-          title = element_blank(),
-          axis.text.x = element_text(angle = 45),
-          text = element_text(family = "Open Sans"))# +
-  incidents.plot <- facet(incidents.plot, facet.by = "community_type", ncol = 5)
-  incidents.plot
-  ggplotly(incidents.plot)
-```
  
 Details
 ======================================================================
@@ -2643,6 +2166,484 @@ Row
           text = element_text(family = "Open Sans"))# +
   #incidents.plot <- facet(incidents.plot, facet.by = "community_type", ncol = 5)
   ggplotly(incidents.plot)
+```
+
+Incidents
+======================================================================
+
+Row
+----------------------------------------------------------------------
+
+### Incidents Title
+
+```{r}
+valueBox("Incidents", icon = "far fa-chart-bar", color = colors.iu[8],
+         caption = "Details of the incidents")
+```
+
+Row
+----------------------------------------------------------------------
+  
+### When Do They Take Place?
+  
+```{r}
+streamgraph(months.frame, key = "community_type", value="n", date="date", interpolate = "step") %>%
+  sg_fill_manual(colors.iu) %>%
+  sg_legend(show=TRUE, label="Community Type: ")# %>%
+```
+
+### Cumulative Incident Count
+
+```{r}
+cumulative.frame <- months.frame %>%
+  separate(col = "date", into = c("day", "month", "year"), remove = FALSE)
+complete.frame <- expand(cumulative.frame, community_type, day, month = 1:12, year = 2016:2019) %>%
+  mutate(date = glue("{day}-{month}-{year}")) %>% select(-day, -month, -year)
+cumulative.frame <- cumulative.frame %>% select(-day, -month, -year)
+complete.frame$date <- as.Date(complete.frame$date, format = "%d-%m-%Y")
+cumulative.frame$date <- as.Date(cumulative.frame$date, format = "%d-%m-%Y")
+cumulative.frame <- cumulative.frame %>%
+  full_join(complete.frame, by = c("community_type", "date")) %>%
+  group_by(community_type, date) %>%
+  arrange(community_type, date) %>%
+  replace_na(list(n = 0)) %>%
+  group_by(community_type) %>%
+  mutate(cumulative_sum = cumsum(n)) %>% ungroup()
+cumulative.plot <- ggplot(cumulative.frame, aes(x = as.Date(date, format = "%d-%m-%Y"),
+                                                y = cumulative_sum, fill = community_type)) +
+  geom_area() +
+  scale_fill_manual(values = community.icons$colors) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        title = element_blank(),
+        axis.title = element_blank(),
+        text = element_text(family = "Open Sans"),
+        panel.background = element_rect(fill = "white"))
+ggplotly(cumulative.plot)
+```
+
+Row
+----------------------------------------------------------------------
+
+### Table of Incidents
+
+```{r}
+table.frame <- coded.frame %>%
+  select(adl_id, date, community_type, city, state, Type, Nature,
+         Perpetrator, Target, Location) %>%
+  arrange(date, adl_id, Type, Nature)
+adl.frame <- read_csv("extremism.csv", col_names = TRUE) %>% select(adl_id, description)
+table.frame <- table.frame %>% left_join(adl.frame, by = "adl_id") %>%
+  select(adl_id, date, community_type, city, state, description, Type, Nature, Perpetrator, Target, Location)
+reactable(table.frame,
+          columns = list(adl_id = colDef(name = "ADL ID", sortable = TRUE, filterable = FALSE, width = 100),
+            date = colDef(name = "Date", sortable = TRUE, filterable = FALSE, width = 100, align = "right", format = colFormat(date = TRUE)),
+            community_type = colDef(name = "Community Type", sortable = TRUE, filterable = FALSE),
+            city = colDef(name = "City", sortable = TRUE, filterable = FALSE),
+            state = colDef(name = "State", sortable = TRUE, filterable = FALSE, width = 75),
+            description = colDef(name = "Description", sortable = FALSE, filterable = FALSE, minWidth = 300),
+            Type = colDef(sortable = TRUE, filterable = FALSE),
+            Nature = colDef(sortable = TRUE, filterable = FALSE),
+            Perpetrator = colDef(sortable = TRUE, filterable = FALSE),
+            Target = colDef(sortable = TRUE, filterable = FALSE),
+            Location = colDef(sortable = TRUE, filterable = FALSE)),
+          searchable = TRUE, minRows = 10, defaultSorted = "adl_id")
+```
+
+Row
+----------------------------------------------------------------------
+  
+### What They're About
+  
+```{r}
+  plot.frame <- coded.frame %>% select(community_type, Type, Nature)
+  incidents.count <- plot.frame %>% group_by(community_type, Type, Nature) %>% add_tally() %>% drop_na() %>% distinct()
+  type.levels <- c("Vandalism", "Harassment", "Cyberbullying", "Performance", "Literature Dump", "Bomb Threat", "Not Specified")
+  nature.levels <- c("Nazi", "General Antisemitism", "Oppression Connection", "Money", "Holocaust Denial", "Conspiracy", "Israel", "Not Specified")
+  incidents.count <- incidents.count %>% mutate(Type = factor(Type, levels = type.levels)) %>%
+    mutate(Nature = factor(Nature, levels = nature.levels))
+  
+  incidents.plot <- ggplot(incidents.count, aes(Type, Nature)) +
+    geom_tile(aes(fill = n), color = "#243142") +
+    geom_text(aes(label = n), size = 3)  +
+    scale_fill_steps(low = "#EDEBEB", high = "#990000", name = "Number", na.value = "#F7F7F8") +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          title = element_blank(),
+          axis.text.x = element_text(angle = 45),
+          text = element_text(family = "Open Sans"))# +
+  incidents.plot <- facet(incidents.plot, facet.by = "community_type", ncol = 5)
+  ggplotly(incidents.plot)
+```
+
+Row
+----------------------------------------------------------------------
+
+### Who Is Involved?
+
+```{r}
+
+  plot.frame <- coded.frame %>% select(community_type, Perpetrator, Target)
+  incidents.count <- plot.frame %>% group_by(community_type, Perpetrator, Target) %>% add_tally() %>% drop_na() %>% distinct()
+  target.levels <- c("Not Specified", "Student", "School", "Teacher", "Outsider", "Parent", "School Personnel")
+  perpetrator.levels <- c("Not Specified", "Student", "Outsider", "Teacher", "Parent", "Crowd", "School Personnel")
+  incidents.count <- incidents.count %>% mutate(Target = factor(Target, levels = target.levels)) %>%
+    mutate(Perpetrator = factor(Perpetrator, levels = perpetrator.levels))
+  incidents.plot <- ggplot(incidents.count, aes(Perpetrator, Target)) +
+    geom_tile(aes(fill = n), color = "#243142") +
+    geom_text(aes(label = n), size = 3)  +
+    scale_fill_steps(low = "#EDEBEB", high = "#990000", name = "Number", na.value = "#F7F7F8") +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          title = element_blank(),
+          axis.text.x = element_text(angle = 45),
+          text = element_text(family = "Open Sans"))# +
+  incidents.plot <- facet(incidents.plot, facet.by = "community_type", ncol = 5)
+  incidents.plot
+  ggplotly(incidents.plot)
+```
+
+Geography
+======================================================================
+
+Row
+----------------------------------------------------------------------
+
+### Geography Title
+
+```{r}
+valueBox("Geography", icon = "fas fa-map-marked-alt", color = colors.iu[7],
+         caption = "Geographic distribution of community types")
+```
+
+Row
+----------------------------------------------------------------------
+
+### Geographic Distribution of Communities
+  
+```{r}
+  overall.map
+```
+
+### State-by-State Distributions of Communities Overall
+  
+```{r}
+  map.frame <- overall.frame %>% #filter(community_type == input$community_type) %>%
+    select(cityID, color, lat, lon) %>%
+    separate(cityID, into = c("abbreviation","city"), sep = "-", remove = FALSE)
+  map.frame$city <- toTitleCase(map.frame$city)
+  map.frame$abbreviation <- toupper(map.frame$abbreviation)
+  count.frame <- map.frame %>% count(abbreviation)
+  the.map <- usa.map %>% full_join(count.frame) 
+  hex.map <- ggplot(the.map) +
+    geom_sf(aes(geometry = tile_map, fill = n), color = "#A7A9AB") +
+    geom_sf_text(aes(geometry = tile_map, label = abbreviation),
+                 fun.geometry = function(x) st_centroid(x), family = "Open Sans") +
+    scale_fill_gradient(low = "#EDEBEB", high = "#990000", name = "Number", na.value = "#F7F7F8", breaks = c(0, 5, 10, 25, 50, 75)) +
+    theme_void() +
+    theme(legend.position = "right",
+          text = element_text(family = "Open Sans"))
+  hex.map
+```
+
+Row
+----------------------------------------------------------------------
+
+### Table of Communities
+
+```{r}
+table.frame <- overall.frame %>% separate(cityID, sep = "-", into = c("State", "City"))
+table.frame$State <- toupper(table.frame$State)
+table.frame$City <- toTitleCase(table.frame$City)
+table.frame <- table.frame %>%
+  select(community_type, City, State, community_interaction, diversity_index, median_income,
+       jewish_infrastructure, political_scale, pop_category) %>%
+  arrange(City)
+reactable(table.frame,
+          columns = list(community_type = colDef(name = "Community Type", sortable = TRUE, filterable = FALSE),
+                         City = colDef(sortable = TRUE, filterable = FALSE),
+                         State = colDef(sortable = TRUE, filterable = FALSE, width = 75),
+                         community_interaction = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Community Landscape"),
+          diversity_index = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Diversity Level"),
+          median_income = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Median Income"),
+          jewish_infrastructure = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Jewish Infrastructure"),
+          political_scale = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Political Scale"),
+          pop_category = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Population Level")),
+          searchable = TRUE, minRows = 8)
+```
+
+Row
+----------------------------------------------------------------------
+  
+### Regional Distribution
+  
+```{r}
+
+  plot.frame <- overall.frame %>%
+    select(cityID, community_type, region_scale) %>% separate(region_scale,
+                                              into = c("region", "division"))
+  region.key <- c("1" = "Northeast", "3" = "South",
+                  "2" = "Midwest", "4" = "West")
+  division.key <- c("1" = "New England", "2" = "Middle Atlantic",
+                    "5" = "South Atlantic", "6" = "East South Central",
+                    "7" = "West South Central", "3" = "East North Central",
+                    "4" = "West North Central", "8" = "Mountain",
+                    "9" = "Pacific")
+  plot.frame$region <- recode(plot.frame$region, !!!region.key)
+  plot.frame$division <- recode(plot.frame$division, !!!division.key)
+  region.count <- plot.frame %>% group_by(community_type, region, division) %>% tally() %>% drop_na()
+  region.levels <- c("West", "Midwest", "South", "Northeast")
+  division.levels <- c("Pacific", "Mountain", "West North Central",
+                       "East North Central", "West South Central",
+                       "East South Central", "South Atlantic",
+                       "Middle Atlantic", "New England")
+  region.empty <- data.frame(community_type = rep(c("Big Cities", "Centers of Socioeconomic Inequality",
+                                                    "Diverse Small Cities", "Diverse Suburban Jewish Centers",
+                                                    "Mid-Sized City Republicans", "Small Town Democrats",
+                                                    "Suburban Jewish Centers", "Wealthy Enclaves",
+                                                    "White Republicans", "White Suburbs"), 9),
+                             region = c("West", "West", "Midwest", "Midwest",
+                                        "South", "South", "South",
+                                        "Northeast", "Northeast"),
+                             division = division.levels)#,
+                            # n = NA)
+  region.count <- region.count %>% mutate(region = factor(region, levels = region.levels)) %>%
+    mutate(division = factor(division, levels = division.levels)) %>%
+    right_join(region.empty)
+  rd.plot <- ggplot(region.count, aes(region, division)) +
+    geom_tile(aes(fill = n), color = "#243142") +
+    geom_text(aes(label = n), size = 3)  +
+    scale_fill_steps(low = "#EDEBEB", high = "#990000", name = "Number", na.value = "#F7F7F8") +
+    xlab("Region") + ylab("Division") +
+    theme(panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          title = element_blank(),
+          text = element_text(family = "Open Sans"))
+  rd.plot <- facet(rd.plot, facet.by = "community_type", ncol = 5)
+  #rd.plot
+  ggplotly(rd.plot)
+```
+
+Factors
+======================================================================
+
+Row
+----------------------------------------------------------------------
+
+### Factors Title
+
+```{r}
+valueBox("Factors", icon = "fab fa-uncharted", color = colors.iu[6],
+         caption = "The factors that shape the community types")
+```
+
+Row
+----------------------------------------------------------------------
+
+### Description of Factors
+
+In identifying the ten community types, the following scales were used:
+
+  * **Community Landscape Scale**: An indication of what the community "looks like," based
+    on a combination of the US Department of Agriculture-designated Rural Urban Continuum Code (RUCC) and
+    the US Housing and Urban Development algorithm-derived Urbanization Perceptions Small Area Index (UPSAI). The 
+    Community Landscape Scale is calculated at the *municipal level*. The 
+    Community Landscape Scale is a number between 0 and 1, with *more urban* places 
+    closer to 0 and *more rural* places closer to 1.
+  * **Diversity Level Scale**: An indication of the diversity of the community, based on
+    an ecological diversity measure making use of racial and ethnic data from the 
+    US Census Bureau. The Diversity Level Scale is calculated at the *municipal level*.
+    The Diversity Level Scale is a number between 0 and 1, with *more diverse* places 
+    closer to 1 and *less diverse* places closer to 0.
+  * **Median Income Scale**: An indication of the wealth of the community, making use of 
+    median income data from the US Census Bureau. The Median Income Scale is calculated 
+    at the *municipal level*. The Median Income Scale is a number between 0 and 1, 
+    with *wealthier* places closer to 1 and *poorer* places closer to 0.
+  * **Jewish Infrastructure Scale**: An indication of the Jewish community structures in 
+    place in the community, based on a combination of the presence or absence of a 
+    Jewish Federation, status as a Network Community, location of a Jewish Community 
+    Relations Council (JCRC), and the percentage of the population of the county that 
+    is estimated to be Jewish. The Jewish Infrastructure Scale is calculated at the 
+    *county level*. The Jewish Infrastructure Scale is a number between -1 and 1, 
+    with *more established* Jewish infrastructure closer to 1 and *less established* 
+    Jewish infrastructure closer to -1.
+  * **Political Scale**: An indication of the political preferences of the community, 
+    based on a calculation of partisan lean over time and a calculation of presidential 
+    election volatility over time. The Political Scale is calculated at the *county level*.
+    The Political Scale is a number between -1 and 1, with *more Republican* `r fa("fas fa-republican")` areas closer 
+    to 1 and *more Democratic* `r fa("fas fa-democrat")` areas closer to -1.
+  * **Population Level Scale**: An indication of the population of the community, 
+    based on US Census data. Population is divided into 10 categories. The Population 
+    Level Scale is calculated at the *municipal level*. The Population Level Scale is a 
+    number between 0 and 1, with *more populous* places closer to 1 and *less populous* 
+    places closer to 0.
+  * **Sundown Scale**: An indication of the historical legacy of exclusion and oppression, 
+    based on the combination of identification as a historical sundown town, presence 
+    of a sign indicating sundown town status, presence of municipal ordinances codifying 
+    the community as a sundown town, confirmation as a sundown town, and present status 
+    as a sundown town. The Sundown Scale is calculated at the *municipal level*. The 
+    Sundown Scale is a number between 0 and 1, with *stronger sundown town legacies* 
+    closer to 1 and *weaker sundown town legacies* closer to 0.
+
+### Combination of Factors
+
+```{r}
+factors.frame <- data.frame(Initial = c("Sundown Status", "Sundown Sign", "Sundown Ordinance", "Sundown Confirmed", "Sundown Still",
+                             "RUCC", "UPSAI",
+                             "Diversity Index",
+                             "Median Income",
+                             "Jewish Federation", "Jewish Network", "Independent JCRC", "Federation-Based JCRC", "Percent Jewish (County)",
+                             "Partisan Lean", "Political Volatility",
+                             "Population"),
+                            Final = c("Sundown Scale", "Sundown Scale", "Sundown Scale", "Sundown Scale", "Sundown Scale",
+                                              "Community Landscape", "Community Landscape",
+                                              "Diversity Level",
+                                              "Median Income",
+                                              "Jewish Infrastructure", "Jewish Infrastructure", "Jewish Infrastructure", "Jewish Infrastructure", "Jewish Infrastructure",
+                                              "Political Scale", "Political Scale",
+                                              "Population Level"), value = 1)
+factors.alluvial <- ggplot(factors.frame, aes(y = value, axis1 = Initial, axis2 = Final)) +
+  geom_alluvium(aes(fill = Final)) +
+  geom_stratum(width = 6/12, fill = "#F7F7F8", color = "grey") +
+  geom_text(stat = "stratum", aes(label = after_stat(stratum))) +
+  scale_fill_manual(values = community.icons$colors) +
+  theme(legend.position = "none",
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_blank(),
+        title = element_blank(),
+        axis.title = element_blank(),
+        axis.ticks = element_blank(),
+        panel.background = element_blank(),
+        text = element_text(family = "Open Sans"))
+factors.alluvial
+```
+
+Row
+----------------------------------------------------------------------
+
+### Contributing Factors to Community Types
+  
+```{r}
+  graph.frame <- overall.frame %>% #filter(community_type == input$community_type) %>%
+    select(community_type, income_median, diversity_median, population_median, political_median,
+           jewish_median, community_median)
+  graph.frame$diversity_median <- graph.frame$diversity_median - median.diversity
+  graph.frame$jewish_median <- graph.frame$jewish_median - jewish.median
+  graph.frame$population_median <- graph.frame$population_median - population.median
+  graph.frame$income_median <- graph.frame$income_median - income.median
+  graph.frame$political_median <- graph.frame$political_median - political.median
+  graph.frame$community_median <- graph.frame$community_median - community.median
+  graph.frame <- graph.frame %>% pivot_longer(cols = !community_type, names_to = "measure") %>%
+    distinct()
+  graph.frame$value_group <- factor(case_when(graph.frame$value < -0.1 ~ "low",
+                                              graph.frame$value > 0.1 ~ "high",
+                                              TRUE ~ "middle"),
+                                    levels = c("low", "middle", "high"))
+  variable.key <- c("community_median" = "Community Type",
+                    "diversity_median" = "Diversity Level",
+                    "income_median" = "Income Level",
+                    "jewish_median" = "Jewish Infrastructure",
+                    "political_median" = "Political Scale",
+                    "population_median" = "Population")
+  graph.frame$measure <- recode(graph.frame$measure, !!!variable.key)
+  the.plot <- ggbarplot(graph.frame, x = "measure", y = "value",
+                        color = "#b5c8b8", fill = "measure",
+                        palette = colors.iu, #c("#006298", "#ffffff", "#990000"),
+                        order = c("Population", "Political Scale",
+                                  "Jewish Infrastructure", "Income Level",
+                                  "Diversity Level", "Community Type")) +
+    #title = plot.title,
+    #subtitle = sub.title,
+    #caption = cap.title) + 
+    scale_y_continuous(limits = c(-0.85, 0.85)) +
+    geom_hline(yintercept = 0, linetype = 2, color = "#79a7ac") +
+    theme(#axis.text.x = element_blank(),
+      axis.text.y = element_text(color = "#243142", family = "Open Sans", size = 8),
+      axis.title = element_blank(),
+      axis.ticks = element_blank(),
+      axis.line = element_line(color = "#b5c8b8"),
+      legend.position = "none",
+      panel.grid.major = element_line(color = "#edeac2", linetype = 8)) +
+    rotate()
+  the.plot <- facet(the.plot, facet.by = "community_type", ncol = 5)
+  the.plot <- ggplotly(the.plot)
+  the.plot
+```
+
+Row
+----------------------------------------------------------------------
+
+### Table of Community Types
+
+```{r}
+table.frame <- overall.frame %>%
+  select(community_type, community_median, diversity_median, income_median,
+         jewish_median, political_median, population_median) %>%
+  distinct() %>% arrange(community_type)
+reactable(table.frame,
+          columns = list(community_type = colDef(name = "Community Type", sortable = TRUE, filterable = FALSE),
+                         community_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Community Landscape"),
+          diversity_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Diversity Level"),
+          income_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Median Income"),
+          jewish_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Jewish Infrastructure"),
+          political_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Political Scale"),
+          population_median = colDef(format = colFormat(digits = 4), sortable = TRUE, filterable = FALSE, name = "Population Level")),
+          searchable = TRUE, minRows = 10, defaultSorted = "community_type")
+```
+
+Row
+----------------------------------------------------------------------
+
+### Factors By Community
+
+```{r}
+  communities.frame <- overall.frame %>%
+    select(cityID, median_income, diversity_index, pop_category, political_scale,
+           jewish_infrastructure, community_interaction)
+  graph.frame <- communities.frame %>% pivot_longer(cols = !cityID, names_to = "measure")
+  ct.frame <- overall.frame %>% select(community_type, cityID)
+  graph.frame <- graph.frame %>% full_join(ct.frame) %>%
+    separate(cityID, into = c("abbreviation","city"), sep = "-", remove = FALSE) %>%
+    select(-cityID)
+  graph.frame$city <- toTitleCase(graph.frame$city)
+  graph.frame$abbreviation <- toupper(graph.frame$abbreviation)
+  graph.frame$city_name <- paste(graph.frame$city, graph.frame$abbreviation, sep = ", ")
+  graph.frame <- graph.frame %>% select(-city, -abbreviation)
+  variable.key <- c("community_interaction" = "Community Type",
+                    "diversity_index" = "Diversity Level",
+                    "median_income" = "Income Level",
+                    "jewish_infrastructure" = "Jewish Infrastructure",
+                    "political_scale" = "Political Scale",
+                    "pop_category" = "Population")
+  graph.frame$measure <- recode(graph.frame$measure, !!!variable.key)
+  the.plot <- ggviolin(graph.frame, x = "measure", y = "value",
+                       color = "measure",
+                       fill = "measure",
+                       palette = colors.iu.light,
+                       order = c("Population", "Political Scale",
+                                 "Jewish Infrastructure", "Income Level",
+                                 "Diversity Level", "Community Type")) +
+    #title = plot.title,
+    #subtitle = sub.title,
+    #caption = cap.title) + 
+    scale_y_continuous(limits = c(-1.5, 1.5)) +
+    # geom_hline(yintercept = 0, linetype = 2, color = "#79a7ac") +
+    theme(axis.text.x = element_text(color = "#243142", family = "Open Sans", size = 9, angle = 45),
+          axis.text.y = element_text(color = "#243142", family = "Open Sans"),
+          axis.title = element_blank(),
+          axis.ticks = element_blank(),
+          axis.line = element_line(color = "#b5c8b8"),
+          legend.position = "none",
+          panel.grid.major = element_line(color = "#edeac2", linetype = 8))# +
+  #rotate()
+  the.plot <- the.plot +
+    geom_quasirandom(aes(color = measure, text = city_name)) +
+    scale_color_manual(values = colors.iu[1:6])
+  the.plot <- facet(the.plot, facet.by = "community_type", ncol = 5)
+  ggplotly(the.plot, tooltip = c("text", "value"))
+#})
+#type.box
 ```
 
 Search {.hidden}
