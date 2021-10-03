@@ -122,8 +122,6 @@ communities.list <- c("Big Cities",
                       "White Republicans",
                       "White Suburbs")
 
-exemplars.frame <- read_csv("exemplar-communities.csv")
-
 colors.diverge <<- c("#006298", "#FAF7F2", "#056E41")
 colors.iu.light <- c("#FF636A", "#FFA690", "#FFE694", "#A7D094", "#94D2E7", "#C09EBB", "#FFD6DB", "#C6ECF6", "#DEE8C6", "#DECADC")
 colors.iu <- c("#990000", "#DF3603", "#FFAA00", "#056E41", "#006298", "#59264D", "#5A0C0C",
@@ -167,7 +165,6 @@ sundown.frame <- overall.frame %>% filter(cityID %in% sd.frame$cityID) %>%
          population_median)
 
 just.cities <- just.cities[!(just.cities$cityID == "ia-bettendorf" | just.cities$cityID == "ia-des moines"),]
-#exemplars.frame <- read_csv("example-communities.csv")
 variables.key <- c(community_median = "Community Interaction",
                    diversity_median = "Diversity Level",
                    income_median = "Median Income",
@@ -636,10 +633,9 @@ Row
   
 ### Investigating Hate in Schools Through a Community Lens
   
-Antisemitic incidents in schools are a widespread and pervasive phenomenon. The ADL has reported a three-fold increase in school-based antisemitic incidences between 2015 and 2018, and a nearly two-fold increase in violent and non-violent incidences of antisemitism in general nationwide.
+Antisemitic incidents in schools are a widespread and pervasive phenomenon. The [Anti-Defamation League](https://www.adl.org/) has reported a three-fold increase in school-based antisemitic incidences between 2015 and 2018, and a nearly two-fold increase in violent and non-violent incidences of antisemitism in general nationwide.
 
-This project utilizes data from the ADL H.E.A.T. Map between 2016 and 2019 to identify incidents of antisemitism that specifically took place in schools.
-These incidents in schools are influenced by demographic, historical, social, and political factors. This project brings this data together to construct a community typology at the national level. This typology will provide insight into the ways that school-based incidents of hate are enacted and reported in context.
+This project utilizes data from the [ADL H.E.A.T. Map](https://www.adl.org/education-and-resources/resource-knowledge-base/adl-heat-map) between 2016 and 2019 to identify incidents of antisemitism that specifically took place in schools. These incidents in schools are influenced by demographic, historical, social, and political factors. This project brings this data together to construct a community typology at the national level. This typology will provide insight into the ways that school-based incidents of hate are enacted and reported in context.
 
 Developing a community typology will allow providers to better target specific demographic, historical, and political attributes of the communities in which these incidents occur through curriculum and learning experiences.
 
@@ -831,9 +827,32 @@ Row {data-height: 450}
 Row
 ----------------------------------------------------------------------
 
-### Sources
+### `r fa("fas fa-database")` Data Sources
 
-Blah blah blah
+  * [ADL H.E.A.T. Map](https://www.adl.org/education-and-resources/resource-knowledge-base/adl-heat-map)
+  * [American Jewish Population Project](https://ajpp.brandeis.edu/)
+  * [The Berman Jewish Databank](https://www.jewishdatabank.org/databank)
+  * [US Census Bureau QuickFacts](https://www.census.gov/quickfacts/fact/table/US/PST045219)
+  * [Southern Poverty Law Center Hate Map](https://www.splcenter.org/hate-map)
+  * [Dave Leip's Atlas of US Presidential Elections](https://uselectionatlas.org/)
+  * [MIT Election Data + Science Lab County Presidential Election Returns](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/VOQCHQ)
+  * [The Jewish Federations of North America FedFinder](https://jewishfederations.org/federation-finder)
+  * [Jewish Council for Public Affairs Local Agencies](https://www.jewishpublicaffairs.org/member-agencies/jcpa-local-member-agencies/)
+  * [US Department of Agriculture Rural-Urban Continuum Codes (RUCC)](https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx)
+  * [US Housing and Urban Development Urbanization Perceptions Small Area Index (UPSAI)](https://www.huduser.gov/portal/AHS-neighborhood-description-study-2017.html)
+  
+### `r fa("fas fa-file-alt")` Citation and Acknowledgments
+
+#### Citing this work
+
+Please cite this work with the following:
+
+[Price, J. F.](mailto:jfprice@iupui.edu), Snorten, C., Wilson, J., Schall, C., Hasan, M. A., Luo, X., Jahin, S. M. A. (2021). 
+"Community Studies of Antisemitism In Schools (CSAIS) Community Typology Explorer." https://jeremyfprice.github.io/csais-dashboard.
+
+#### Acknowledgments of Support
+
+This work is supported by a [Research Start-Up Funds Grant (RSFG)](https://research.iu.edu/funding-proposals/funding/opportunities/research-support-funds-grant/index.html) from the [IUPUI Office of the Vice Chancellor for Research](https://research.iu.edu/),a [Block Grant from the IU School of Education-Indianapolis at IUPUI](https://education.iupui.edu/), and an [IUPUI Institute for Integrative AI](https://iai.iupui.edu/) [Collaborative Seed Fund Grant](https://iai.iupui.edu/research/white-paper/).
 
 Factors
 ======================================================================
@@ -856,8 +875,8 @@ Row
 In identifying the ten community types, the following scales were used:
 
   * **Community Landscape Scale**: An indication of what the community "looks like," based
-    on a combination of the US Census-designated Rural Urban Continuum Code (RUCC) and
-    the algorithm-derived Urbanization Perceptions Small Area Index (UPSAI). The 
+    on a combination of the US Department of Agriculture-designated Rural Urban Continuum Code (RUCC) and
+    the US Housing and Urban Development algorithm-derived Urbanization Perceptions Small Area Index (UPSAI). The 
     Community Landscape Scale is calculated at the *municipal level*. The 
     Community Landscape Scale is a number between 0 and 1, with *more urban* places 
     closer to 0 and *more rural* places closer to 1.
@@ -2638,20 +2657,3 @@ Row
 table.frame <- overall.frame %>% select(cityID, community_type)
 table.frame %>% datatable(rownames = FALSE)
 ```
-
-<!--
-```{r, results='hidden'}
-ct <- "Big Cities"
-photo.frame <- exemplars.frame %>% filter(community_type == ct)
-photo.number <- sample(1:4, 1)
-photo.label <- photo.frame$label[[photo.number]]
-photo.file <- photo.frame$cityID[[photo.number]]
-photo.ext <- photo.frame$img[[photo.number]]
-photo.display <- glue("community-images/{photo.file}.{photo.ext}")
-photo.link <- photo.frame$link[[photo.number]]
-photo.attr <- photo.frame$attribution[[photo.number]]
-display.photo <- glue("![Photo of {photo.label}]({photo.display})\n")
-display.credit <- glue("Attribution: [{photo.attr}]({photo.link})")
-print(display.credit)
-```
--->
