@@ -2189,7 +2189,7 @@ Row
 ### When Do They Take Place?
   
 ```{r}
-streamgraph(months.frame, key = "community_type", value="n", date="date", interpolate = "step") %>%
+streamgraph(months.frame, key = "community_type", value="n", date="date", offset = "zero", interpolate = "step") %>%
   sg_fill_manual(colors.iu) %>%
   sg_legend(show=TRUE, label="Community Type: ")# %>%
 ```
