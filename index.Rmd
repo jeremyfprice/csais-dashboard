@@ -463,7 +463,7 @@ create.tilemap <- function(ct) {
           axis.title = element_blank(),
           axis.text.x = element_text(angle = 90),
           legend.position = "bottom",
-          text = element_text(family = "Open Sans"))# +
+          text = element_text(family = "Open Sans"))
   return(incidents.plot)
 }
 
@@ -570,9 +570,10 @@ create.tile <- function(ct) {
           panel.grid.minor = element_blank(),
           title = element_blank(),
           axis.title = element_blank(),
-          axis.text.x = element_text(angle = 90),
+          axis.text.x = element_text(angle = 45),
           legend.position = "bottom",
           text = element_text(family = "Open Sans"))
+  incidents.plot <- ggplotly(incidents.plot)
   return(incidents.plot)
 }
 
@@ -594,6 +595,7 @@ create.tile_agents <- function(ct) {
           axis.text.x = element_text(angle = 90),
           legend.position = "bottom",
           text = element_text(family = "Open Sans"))
+  incidents.plot <- ggplotly(incidents.plot)
   return(incidents.plot)
 }
 
@@ -965,13 +967,13 @@ print(create.calendar(ct))
 ### `r fa("fas fa-city")` Kinds of Incidents in Big Cities
 
 ```{r}
-print(create.tile(ct))
+create.tile(ct)
 ```
 
 ### `r fa("fas fa-city")` Involvement in Big Cities
 
 ```{r}
-print(create.tile_agents(ct))
+create.tile_agents(ct)
 ```
 
 Row
@@ -1076,13 +1078,13 @@ print(create.calendar(ct))
 ### `r fa("fas fa-not-equal")` Kinds of Incidents in Centers of Socioeconomic Inequality
 
 ```{r}
-print(create.tile(ct))
+create.tile(ct)
 ```
 
 ### `r fa("fas fa-not-equal")` Involvement in Centers of Socioeconomic Inequality
 
 ```{r}
-print(create.tile_agents(ct))
+create.tile_agents(ct)
 ```
 
 Row
@@ -1188,13 +1190,13 @@ print(create.calendar(ct))
 ### `r fa("fas fa-palette")` Kinds of Incidents in Diverse Small Cities
 
 ```{r}
-print(create.tile(ct))
+create.tile(ct)
 ```
 
 ### `r fa("fas fa-palette")` Involvement in Diverse Small Cities
 
 ```{r}
-print(create.tile_agents(ct))
+create.tile_agents(ct)
 ```
 
 Row
@@ -1300,13 +1302,13 @@ print(create.calendar(ct))
 ### `r fa("fas fa-hamsa")` Kinds of Incidents in Diverse Suburban Jewish Centers
 
 ```{r}
-print(create.tile(ct))
+create.tile(ct)
 ```
 
 ### `r fa("fas fa-hamsa")` Involvement in Diverse Suburban Jewish Centers
 
 ```{r}
-print(create.tile_agents(ct))
+create.tile_agents(ct)
 ```
 
 Row
@@ -1412,13 +1414,13 @@ print(create.calendar(ct))
 ### `r fa("fas fa-industry")` Kinds of Incidents in Mid-Sized City Republicans
 
 ```{r}
-print(create.tile(ct))
+create.tile(ct)
 ```
 
 ### `r fa("fas fa-industry")` Involvement in Mid-Sized City Republicans
 
 ```{r}
-print(create.tile_agents(ct))
+create.tile_agents(ct)
 ```
 
 Row
@@ -1524,13 +1526,13 @@ print(create.calendar(ct))
 ### `r fa("fas fa-mountain")` Kinds of Incidents in Small Town Democrats
 
 ```{r}
-print(create.tile(ct))
+create.tile(ct)
 ```
 
 ### `r fa("fas fa-mountain")` Involvement in Small Town Democrats
 
 ```{r}
-print(create.tile_agents(ct))
+create.tile_agents(ct)
 ```
 
 Row
@@ -1636,13 +1638,13 @@ print(create.calendar(ct))
 ### `r fa("fas fa-torah")` Kinds of Incidents in Suburban Jewish Centers
 
 ```{r}
-print(create.tile(ct))
+create.tile(ct)
 ```
 
 ### `r fa("fas fa-torah")` Involvement in Suburban Jewish Centers
 
 ```{r}
-print(create.tile_agents(ct))
+create.tile_agents(ct)
 ```
 
 Row
@@ -1748,13 +1750,13 @@ print(create.calendar(ct))
 ### `r fa("fas fa-funnel-dollar")` Kinds of Incidents in Wealthy Enclaves
 
 ```{r}
-print(create.tile(ct))
+create.tile(ct)
 ```
 
 ### `r fa("fas fa-funnel-dollar")` Involvement in Wealthy Enclaves
 
 ```{r}
-print(create.tile_agents(ct))
+create.tile_agents(ct)
 ```
 
 Row
@@ -1860,13 +1862,13 @@ print(create.calendar(ct))
 ### `r fa("fas fa-compress-arrows-alt")` Kinds of Incidents in White Republicans
 
 ```{r}
-print(create.tile(ct))
+create.tile(ct)
 ```
 
 ### `r fa("fas fa-compress-arrows-alt")` Involvement in White Republicans
 
 ```{r}
-print(create.tile_agents(ct))
+create.tile_agents(ct)
 ```
 
 Row
@@ -1972,13 +1974,13 @@ print(create.calendar(ct))
 ### `r fa("fas fa-archway")` Kinds of Incidents in White Suburbs
 
 ```{r}
-print(create.tile(ct))
+create.tile(ct)
 ```
 
 ### `r fa("fas fa-archway")` Involvement in White Suburbs
 
 ```{r}
-print(create.tile_agents(ct))
+create.tile_agents(ct)
 ```
 
 Sundown Status
