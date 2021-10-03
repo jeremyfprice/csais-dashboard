@@ -592,7 +592,7 @@ create.tile_agents <- function(ct) {
           panel.grid.minor = element_blank(),
           title = element_blank(),
           axis.title = element_blank(),
-          axis.text.x = element_text(angle = 90),
+          axis.text.x = element_text(angle = 45),
           legend.position = "bottom",
           text = element_text(family = "Open Sans"))
   incidents.plot <- ggplotly(incidents.plot)
