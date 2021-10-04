@@ -856,26 +856,7 @@ Please cite this work with the following:
 
 This work is supported by a [Research Start-Up Funds Grant (RSFG)](https://research.iu.edu/funding-proposals/funding/opportunities/research-support-funds-grant/index.html) from the [IUPUI Office of the Vice Chancellor for Research](https://research.iu.edu/),a [Block Grant from the IU School of Education-Indianapolis at IUPUI](https://education.iupui.edu/), and an [IUPUI Institute for Integrative AI](https://iai.iupui.edu/) [Collaborative Seed Fund Grant](https://iai.iupui.edu/research/white-paper/).
 
- 
-Details
-======================================================================
-
-Row
-----------------------------------------------------------
-
-### Details Title
-
-```{r}
-valueBox("Details", icon = "fas fa-info-circle", color = colors.iu[9],
-         caption = "Details of the community types")
-```
-
-<!--Row
-----------------------------------------------------------
-
-### `r fa("fas fa-info-circle")` Exploring Community Types
-
-Blah blah blah-->
+# Big Cities {data-navmenu="Community Types"}
 
 Row
 ----------------------------------------------------------
@@ -975,6 +956,8 @@ create.tile(ct)
 ```{r}
 create.tile_agents(ct)
 ```
+
+# Centers of Socioeconomic Inequality {data-navmenu="Community Types"}
 
 Row
 ----------------------------------------------------------
@@ -1086,6 +1069,8 @@ create.tile(ct)
 ```{r}
 create.tile_agents(ct)
 ```
+
+# Diverse Small Cities {data-navmenu="Community Types"}
 
 Row
 ----------------------------------------------------------
@@ -1199,10 +1184,12 @@ create.tile(ct)
 create.tile_agents(ct)
 ```
 
+# Diverse Suburban Jewish Centers  {data-navmenu="Community Types"}
+
 Row
 ----------------------------------------------------------
 
-### Diverse Suburban Jewish Centers
+### Diverse Suburban Jewish Centers Title
 
 ```{r}
   ct <- "Diverse Suburban Jewish Centers"
@@ -1311,10 +1298,12 @@ create.tile(ct)
 create.tile_agents(ct)
 ```
 
+# Mid-Sized City Republicans {data-navmenu="Community Types"}
+
 Row
 ----------------------------------------------------------
 
-### Mid-Sized City Republicans
+### Mid-Sized City Republicans Title
 
 ```{r}
   ct <- "Mid-Sized City Republicans"
@@ -1423,10 +1412,10 @@ create.tile(ct)
 create.tile_agents(ct)
 ```
 
+# Small Town Democrats {data-navmenu="Community Types"}
+
 Row
 ----------------------------------------------------------
-
-### Small Town Democrats
 
 ```{r}
   ct <- "Small Town Democrats"
@@ -1535,10 +1524,12 @@ create.tile(ct)
 create.tile_agents(ct)
 ```
 
+# Suburban Jewish Centers {data-navmenu="Community Types"}
+
 Row
 ----------------------------------------------------------
 
-### Suburban Jewish Centers
+### Suburban Jewish Centers Title
 
 ```{r}
   ct <- "Suburban Jewish Centers"
@@ -1647,10 +1638,12 @@ create.tile(ct)
 create.tile_agents(ct)
 ```
 
+# Wealthy Enclaves {data-navmenu="Community Types"}
+
 Row
 ----------------------------------------------------------
 
-### Wealthy Enclaves
+### Wealthy Enclaves Title
 
 ```{r}
   ct <- "Wealthy Enclaves"
@@ -1762,7 +1755,12 @@ create.tile_agents(ct)
 Row
 ----------------------------------------------------------
 
-### White Republicans
+# White Republicans {data-navmenu="Community Types"}
+
+Row
+----------------------------------------------------------
+
+### White Republicans Title
 
 ```{r}
   ct <- "White Republicans"
@@ -1871,10 +1869,12 @@ create.tile(ct)
 create.tile_agents(ct)
 ```
 
+# White Suburbs {data-navmenu="Community Types"}
+
 Row
 ----------------------------------------------------------
 
-### White Suburbs
+### White Suburbs Title
 
 ```{r}
   ct <- "White Suburbs"
