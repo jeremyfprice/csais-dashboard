@@ -1417,6 +1417,8 @@ create.tile_agents(ct)
 Row
 ----------------------------------------------------------
 
+### Small Town Democrats Title
+
 ```{r}
   ct <- "Small Town Democrats"
   the.icon <- community.icons$icons[community.icons$community_type == ct]
