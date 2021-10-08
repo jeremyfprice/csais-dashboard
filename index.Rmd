@@ -845,6 +845,10 @@ Row
   
 ### `r fa("fas fa-file-alt")` Citation and Acknowledgments
 
+<div style="float: right; clear: left;">
+![](rooster.jpg)
+</div>
+
 #### Citing this work
 
 Please cite this work with the following:
